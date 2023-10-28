@@ -12,7 +12,7 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('+358')
-  const [filterNames, setNewFilterNames] = useState('ada')
+  const [filterNames, setNewFilterNames] = useState('')
 
   const addPerson = (event) => {
     event.preventDefault()
