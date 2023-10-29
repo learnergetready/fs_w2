@@ -22,21 +22,25 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    if( persons.every( person => person.name !== newName) ) {
+
+    if( persons.every( person => person.name !== newName) ) {   
       const newPerson = { name: newName, 
-                          number: newNumber }
-      
+                          number: newNumber }   
       peopleService
         .create(newPerson)
         .then(returnedPerson => 
           setPersons(persons.concat(returnedPerson)))
-    
-      setNewName("")
-      setNewNumber("+358")
-
-    } else {
-      alert(`${newName} is already added to Phonebook`)
+     } else {
+      if(window.confirm(`${newName} is already added to Phonebook, replace the old number with a new one?`)) {
+        const oldPerson = persons.find(person => person.name === newName)
+        peopleService
+          .update({ ...oldPerson, number: newNumber})
+            .then( returnedPerson => 
+              setPersons(persons.map( person => person.id !== returnedPerson.id ? person : returnedPerson )))
+      }
     }
+    setNewName("")
+    setNewNumber("+358")
   }
 
   const handleFilter = (event) => setNewFilterNames(event.target.value)
