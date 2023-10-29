@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import peopleService from './services/persons'
+import axios from 'axios'
 
 const App = () => {
 
@@ -38,12 +39,17 @@ const App = () => {
     }
   }
 
-  const handleChangeName = (event) => setNewName(event.target.value)
-
-  const handleChangeNumber = (event) => setNewNumber(event.target.value)
-
   const handleFilter = (event) => setNewFilterNames(event.target.value)
 
+  const handleChangeName = (event) => setNewName(event.target.value)
+  const handleChangeNumber = (event) => setNewNumber(event.target.value)
+
+  const handleDelete = (nixedPerson) => {
+    if(window.confirm(`Delete ${nixedPerson.name} ?`)) {
+      peopleService.deletePerson(nixedPerson.id)
+      setPersons(persons.filter(person => person.id !== nixedPerson.id))
+    }
+  }
 
   return (
     <div>
@@ -57,7 +63,7 @@ const App = () => {
       
       <h3>Numbers</h3>
       
-      <Persons persons={persons} filterNames={filterNames}/>
+      <Persons persons={persons} filterNames={filterNames} handleDelete={handleDelete} />
     
     </div>
   )
