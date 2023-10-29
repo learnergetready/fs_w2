@@ -2,22 +2,28 @@ import {useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 import peopleService from './services/persons'
 import axios from 'axios'
 
 const App = () => {
 
-  
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('+358')
   const [filterNames, setNewFilterNames] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     peopleService
       .getAll()
       .then( initialPeople => setPersons(initialPeople))
   }, [])
+
+  const showNotification = (message) => {
+    setNotification(message)
+    setTimeout( () => setNotification(null), 5000)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -28,15 +34,19 @@ const App = () => {
                           number: newNumber }   
       peopleService
         .create(newPerson)
-        .then(returnedPerson => 
-          setPersons(persons.concat(returnedPerson)))
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          showNotification(`Added ${returnedPerson.name}`)
+          })
      } else {
       if(window.confirm(`${newName} is already added to Phonebook, replace the old number with a new one?`)) {
         const oldPerson = persons.find(person => person.name === newName)
         peopleService
           .update({ ...oldPerson, number: newNumber})
-            .then( returnedPerson => 
-              setPersons(persons.map( person => person.id !== returnedPerson.id ? person : returnedPerson )))
+            .then( returnedPerson => {
+              setPersons(persons.map( person => person.id !== returnedPerson.id ? person : returnedPerson ))
+              showNotification(`Changed the phonenumber for ${returnedPerson.name}`)
+            })
       }
     }
     setNewName("")
@@ -52,13 +62,16 @@ const App = () => {
     if(window.confirm(`Delete ${nixedPerson.name} ?`)) {
       peopleService.deletePerson(nixedPerson.id)
       setPersons(persons.filter(person => person.id !== nixedPerson.id))
+      showNotification(`Deleted ${nixedPerson.name}`)
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      
+
+      <Notification message={notification} />
+
       <Filter filterNames={filterNames} handleFilter={handleFilter} />
       
       <h3>Add a new person</h3>
