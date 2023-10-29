@@ -24,12 +24,18 @@ const App = () => {
     if( persons.every( person => person.name !== newName) ) {
       const newPerson = { name: newName, 
                           number: newNumber }
-      setPersons(persons.concat(newPerson))
+      
+      peopleService
+        .create(newPerson)
+        .then(returnedPerson => 
+          setPersons(persons.concat(returnedPerson)))
+    
+      setNewName("")
+      setNewNumber("+358")
+
     } else {
       alert(`${newName} is already added to Phonebook`)
     }
-    setNewName("")
-    setNewNumber("+358")
   }
 
   const handleChangeName = (event) => setNewName(event.target.value)
