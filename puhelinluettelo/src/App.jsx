@@ -13,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('+358')
   const [filterNames, setNewFilterNames] = useState('')
   const [notification, setNotification] = useState(null)
+  const [notificationColor, setNotificationColor] = useState(undefined)
 
   useEffect(() => {
     peopleService
@@ -20,9 +21,18 @@ const App = () => {
       .then( initialPeople => setPersons(initialPeople))
   }, [])
 
-  const showNotification = (message) => {
+  const showNotification = (message, color) => {
     setNotification(message)
-    setTimeout( () => setNotification(null), 5000)
+    setNotificationColor(color)
+    setTimeout( () => {
+      setNotification(null)
+      setNotificationColor(undefined)
+    }, 3000)
+  }
+
+  const handleErrorAlreadyDeleted = (removedPerson) => {
+    showNotification(`Information of ${removedPerson.name} has already been removed from the server`, "red")
+    setPersons(persons.filter(person => person.id !== removedPerson.id))
   }
 
   const addPerson = (event) => {
@@ -38,6 +48,7 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           showNotification(`Added ${returnedPerson.name}`)
           })
+          .catch(() => handleErrorAlreadyDeleted(newPerson))
      } else {
       if(window.confirm(`${newName} is already added to Phonebook, replace the old number with a new one?`)) {
         const oldPerson = persons.find(person => person.name === newName)
@@ -45,8 +56,9 @@ const App = () => {
           .update({ ...oldPerson, number: newNumber})
             .then( returnedPerson => {
               setPersons(persons.map( person => person.id !== returnedPerson.id ? person : returnedPerson ))
-              showNotification(`Changed the phonenumber for ${returnedPerson.name}`)
+              showNotification(`Changed the phonenumber for ${returnedPerson.name}`, "red")
             })
+            .catch(() => handleErrorAlreadyDeleted(oldPerson))
       }
     }
     setNewName("")
@@ -61,8 +73,11 @@ const App = () => {
   const handleDelete = (nixedPerson) => {
     if(window.confirm(`Delete ${nixedPerson.name} ?`)) {
       peopleService.deletePerson(nixedPerson.id)
-      setPersons(persons.filter(person => person.id !== nixedPerson.id))
-      showNotification(`Deleted ${nixedPerson.name}`)
+        .then( () => {
+          setPersons(persons.filter(person => person.id !== nixedPerson.id))
+          showNotification(`Deleted ${nixedPerson.name}`)
+        })
+          .catch(() => handleErrorAlreadyDeleted(nixedPerson))
     }
   }
 
@@ -70,7 +85,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={notification} />
+      <Notification message={notification} color={notificationColor}/>
 
       <Filter filterNames={filterNames} handleFilter={handleFilter} />
       
