@@ -12,7 +12,6 @@ import countryService from './services/countryService'
 function App() {
   const [searchTerm, setSearchTerm] = useState("")
   const [choices, setChoices] = useState(null)
-  const [result, setResult] = useState(null)
 
   useEffect(() => {
     countryService
@@ -41,7 +40,7 @@ function App() {
     <div>
       find coutries: <input value={searchTerm} onChange={handleChange}></input>
 
-      <Countries choices={choices} />
+      <Countries choices={choices} setSearchTerm={setSearchTerm}/>
     </div>
   )
 }
