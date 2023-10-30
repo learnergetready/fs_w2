@@ -7,10 +7,6 @@ const getAll = () =>
   axios
     .get(allUrl)
     .then(response => response.data)
-/*
-const getResult = () => 
-    axios
-      .get(`${countryUrl}/Jamaica`)
-      .then(response => response.data)
-*/
+
+
 export default {getAll}
