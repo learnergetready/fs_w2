@@ -3,6 +3,7 @@ const Result = ({country}) => {
     fontSize: 128,
     margin: 0
   }
+
   return(
     <div>
       <h2>{country.name.official}</h2>
@@ -13,7 +14,7 @@ const Result = ({country}) => {
       <ul>
       {Object.values(country.languages).map( lang => <li key={lang}>{lang}</li>)}
       </ul>
-      <h1 style={flagStyle}>{country.flag}</h1>
+      <p style={flagStyle}>{country.flag}</p>
   </div>
 )}
 

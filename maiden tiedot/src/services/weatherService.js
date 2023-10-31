@@ -1,10 +1,10 @@
 import axios from "axios"
-const api_key = import.meta.env.OWM_KEY
-const cityWeatherUrl = "http://api.openweathermap.org/data/25/weather?q="
+const api_key = import.meta.env.VITE_OWM_KEY
+const cityWeatherUrl = "http://api.openweathermap.org/data/2.5/weather?q="
 
-const getCityWeather = ({cityDotCountry}) => 
+const getCityWeather = (props) => 
   axios
-    .get(`${cityWeatherUrl}/${cityDotCountry}&APPID=${api_key}`)
+    .get(`${cityWeatherUrl}${props}&APPID=${api_key}`)
     .then(response => response.data)
 
 export default {getCityWeather}
